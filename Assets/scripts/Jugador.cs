@@ -7,13 +7,13 @@
 //    public float FuerzaSalto;
 
 //    //private float Horizontal;
-//    private Rigidbody2D rigidbody2D;
+//    private Rigidbody2D rb;
 //    private Animator animator;
 //    // Start is called before the first frame update
 //    void Start()
 //    {
 //        animator = GetComponent<Animator>();
-//        rigidbody2D = GetComponent<Rigidbody2D>();
+//        rb = GetComponent<Rigidbody2D>();
 //    }
 
 //    // Update is called once per frame
@@ -22,10 +22,10 @@
 
 //        //Horizontal = Input.GetAxisRaw("Horizontal");
 
-//        if (Input.GetKeyDown(KeyCode.W)) 
+//        if (Input.GetKeyDown(KeyCode.W))
 //        {
 //            animator.SetBool("EstaSaltando", true);
-//            rigidbody2D.AddForce(new Vector2(0, FuerzaSalto));
+//            rb.AddForce(new Vector2(0, FuerzaSalto));
 //        }
 //    }
 

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class Movimiento : MonoBehaviour
 {
@@ -17,14 +18,20 @@ public class Movimiento : MonoBehaviour
     private Vector3 velocidad = Vector3.zero;
     private bool mirandoDerecha = true;
 
+    [Header("Animacion")]
+    private Animator animator;
+
     private void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+
     }
 
     private void Update()
     {
         movimientoHorizontal = Input.GetAxisRaw("Horizontal") * velocidadDeMovimiento;
+        animator.SetFloat("Horizontal", Mathf.Abs(movimientoHorizontal));
     }
 
     private void FixedUpdate()
