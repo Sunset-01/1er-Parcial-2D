@@ -8,6 +8,8 @@ TagManager:
   - Enemigo
   - Destruible
   - Ground
+  - Obstacle
+  - Enemy
   layers:
   - Default
   - TransparentFX

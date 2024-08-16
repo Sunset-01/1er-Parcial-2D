@@ -1,42 +1,58 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class Movimiento : MonoBehaviour
 {
     private Rigidbody2D rb2D;
 
     [Header("Movimiento")]
-
     private float movimientoHorizontal = 0f;
 
     [SerializeField] private float velocidadDeMovimiento;
     [SerializeField] private float suavizadoDeMovimiento;
+    [SerializeField] private float velocidadDeCorrer;
+    [SerializeField] private float tiempoDeDash;
+    [SerializeField] private float fuerzaDeDash;
+    [SerializeField] private float tiempoDeRecargaDash; 
 
     private Vector3 velocidad = Vector3.zero;
     private bool mirandoDerecha = true;
 
-    [Header("Animacion")]
-    private Animator animator;
+    private bool estaHaciendoDash = false;
+    private float tiempoDesdeUltimoDash = 0f;
 
     private void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-
     }
 
     private void Update()
     {
         movimientoHorizontal = Input.GetAxisRaw("Horizontal") * velocidadDeMovimiento;
-        animator.SetFloat("Horizontal", Mathf.Abs(movimientoHorizontal));
+
+        if (InputManager.Correr())
+        {
+            movimientoHorizontal *= velocidadDeCorrer;
+        }
+            
+        if (InputManager.Dash() && !estaHaciendoDash && tiempoDesdeUltimoDash >= tiempoDeRecargaDash)
+        {
+            StartCoroutine(Dash());
+        }
+
+        if (tiempoDesdeUltimoDash < tiempoDeRecargaDash)
+        {
+            tiempoDesdeUltimoDash += Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
     {
-        Mover(movimientoHorizontal * Time.fixedDeltaTime);
+        if (!estaHaciendoDash)
+        {
+            Mover(movimientoHorizontal * Time.fixedDeltaTime);
+        }
     }
 
     private void Mover(float mover)
@@ -46,12 +62,10 @@ public class Movimiento : MonoBehaviour
 
         if (mover > 0 && !mirandoDerecha)
         {
-            //girar
             Girar();
         }
         else if (mover < 0 && mirandoDerecha)
         {
-            //Girar
             Girar();
         }
     }
@@ -59,8 +73,23 @@ public class Movimiento : MonoBehaviour
     private void Girar()
     {
         mirandoDerecha = !mirandoDerecha;
-        Vector3 escala = transform.localScale;
-        escala.x *= -1;
-        transform.localScale = escala;
+        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y + 180, 0);
+        
+    }
+
+    private IEnumerator Dash()
+    {
+        estaHaciendoDash = true;
+        tiempoDesdeUltimoDash = 0f; 
+
+        float direccionDash = movimientoHorizontal > 0 ? 1 : -1;
+        rb2D.velocity = new Vector2(direccionDash * fuerzaDeDash, rb2D.velocity.x);
+        
+        yield return new WaitForSeconds(tiempoDeDash);
+
+        rb2D.velocity = new Vector2(0, rb2D.velocity.y); 
+        estaHaciendoDash = false;
     }
 }
+
+

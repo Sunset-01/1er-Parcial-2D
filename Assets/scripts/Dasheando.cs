@@ -7,11 +7,10 @@ using UnityEngine;
 
 public class Dasheando : MonoBehaviour
 {
-    private float horizontal;
     private float speed = 8f;
     private float runningSpeed = 30f; 
-    private float jumpingPower = 16f;
-    private bool isFacingRight = true;
+
+    //private bool isFacingRight = true;
 
     private bool CanDash = true;
     private bool isDashing;
@@ -20,24 +19,15 @@ public class Dasheando : MonoBehaviour
     private float DashingCooldown = 1f;
 
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
+
     [SerializeField] private TrailRenderer tr;
 
-    [Header("Animacion")]
-    private Animator animator;
 
-    private void Start()
-    {
-        animator = GetComponent<Animator>();
-
-    }
 
     private void Update()
     {
 
-        horizontal = Input.GetAxisRaw("Horizontal");
-        animator.SetFloat("Horizontal", Mathf.Abs(horizontal));
+
 
 
         if (isDashing)
@@ -56,22 +46,13 @@ public class Dasheando : MonoBehaviour
             speed = 8f; 
         }
 
-        if (Input.GetButtonDown("Jump") && IsGrounded())
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-        }
 
-        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-        }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && CanDash)
         {
             StartCoroutine(Dash());
         }
 
-        Flip();
     }
 
     private void FixedUpdate()
@@ -80,25 +61,12 @@ public class Dasheando : MonoBehaviour
         {
             return;
         }
-
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        Vector2 x = rb.velocity;
+        x.x += speed * InputManager.moveplayer().x * Time.deltaTime;
+        rb.velocity = x;
     }
 
-    private bool IsGrounded()
-    {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
-    }
 
-    private void Flip()
-    {
-        if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f)
-        {
-            Vector3 localscale = transform.localScale;
-            isFacingRight = !isFacingRight;
-            localscale.x *= -1f;
-            transform.localScale = localscale;
-        }
-    }
 
     private IEnumerator Dash()
     {
